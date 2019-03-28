@@ -6,55 +6,56 @@
         v-for="feedback in feedbackList"
         :key="feedback.uuid"
       >
-        <div class="feedback-list__item-heading">
-          <img class="feedback-list__item-heading-avatar"
-            :src="'https://api.adorable.io/avatars/64/' + feedback.uuid + '.png'"
-            alt="author avatar"
-          />
-          {{ feedback.author.name }}
-        </div>
-        <div class="feedback-list__item-body">
-          <h5>
-            {{ feedback.title }}
-            <div class="feedback-list__rating ">
-              <font-awesome-icon
-                icon="star"
-                v-for="i in feedback.rating"
-                :key="i"
-              ></font-awesome-icon>
-            </div>
-          </h5>
-          <div v-html="feedback.body"></div>
-        </div>
-        <div class="feedback-list__item-footer">
-          <div>
-            <font-awesome-icon icon="heart"></font-awesome-icon>
-            <div>{{ feedback.statistics.vote_count }}</div>
-          </div>
-          <div>
-            <font-awesome-icon icon="comment"></font-awesome-icon>
-            <div>{{ feedback.statistics.answer_count }}</div>
-          </div>
-          <div>
-            Kommentieren
-          </div>
-        </div>
+        <FeedbackHeader
+          :avatar="
+            'https://api.adorable.io/avatars/64/' + feedback.uuid + '.png'
+          "
+          :name="feedback.author.name"
+          :dateSince="timeAgo(feedback.created_at)"
+        ></FeedbackHeader>
+        <FeedbackBody
+          :title="feedback.title"
+          :rating="feedback.rating"
+          :body="feedback.body"
+        >
+        </FeedbackBody>
+        <FeedbackFooter
+          :votes="feedback.statistics.vote_count"
+          :answers="feedback.statistics.answer_count"
+          :dateSince="timeAgo(feedback.last_activity_at)"
+        >
+        </FeedbackFooter>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import FeedbackHeader from "./FeedbackHeader";
+import FeedbackBody from "./FeedbackBody";
+import FeedbackFooter from "./FeedbackFooter";
 import { mapState, mapActions } from "vuex";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
+TimeAgo.addLocale(en);
+
+const timeAgo = new TimeAgo("en-US");
 
 export default {
+  components: {
+    FeedbackHeader,
+    FeedbackBody,
+    FeedbackFooter
+  },
   computed: mapState(["feedbackList", "page", "total", "perPage"]),
-  methods: mapActions(["fetchFeedbacks"])
+  methods: {
+    timeAgo: date => timeAgo.format(Date.parse(date)),
+    ...mapActions(["fetchFeedbacks"])
+  }
 };
 </script>
 
 <style lang="scss" scoped>
-
 .feedback-list {
   @extend .container-fluid;
   @extend .py-3;
@@ -66,40 +67,6 @@ export default {
     @extend .mb-3;
     list-style: none;
     background-color: white;
-  }
-  &__item-heading {
-    @extend .mb-2;
-    &-avatar {
-      @extend .rounded-circle;
-      @extend .mr-1;
-      width: 40px;
-      height: 40px;
-    }
-  }
-
-  &__item-body {
-    margin-bottom: 1rem;
-  }
-  &__rating {
-    @extend .text-primary;
-    @extend .d-md-inline-block;
-    font-size: 1.1rem;
-    svg {
-      margin-right: 0.2rem;
-    }
-  }
-  &__item-footer {
-    color: $gray-light;
-    line-height: 1;
-    font-size: 0.9rem;
-    * {
-      margin-right: 0.5rem;
-      display: inline-block;
-    }
-    > * {
-      cursor: pointer;
-      margin-right: 0.8rem;
-    }
   }
 }
 </style>
