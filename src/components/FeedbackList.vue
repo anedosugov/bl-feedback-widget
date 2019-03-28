@@ -31,9 +31,9 @@
 </template>
 
 <script>
-import FeedbackHeader from "./FeedbackHeader";
-import FeedbackBody from "./FeedbackBody";
-import FeedbackFooter from "./FeedbackFooter";
+import FeedbackHeader from "./Feedback/FeedbackHeader";
+import FeedbackBody from "./Feedback/FeedbackBody";
+import FeedbackFooter from "./Feedback/FeedbackFooter";
 import { mapState, mapActions } from "vuex";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
